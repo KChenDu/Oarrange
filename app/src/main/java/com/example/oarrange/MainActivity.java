@@ -2,6 +2,7 @@ package com.example.oarrange;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,5 +18,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void launchGame(View view) {
         Log.d(LOG_TAG, "Button clicked!");
+        startActivity(new Intent(this, GameActivity.class));
     }
 }
