@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -29,13 +30,30 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        Card card1 = new Card(0, new Pair<Integer, Integer>(0, 0), 0);
-
-        ImageView mImageView = new ImageView(this);
-
-
         FrameLayout mFrameLayout = findViewById(R.id.board);
-        mFrameLayout.addView(mImageView);
+
+        // Card card1 = new Card(0, new Pair<Integer, Integer>(0, 0), 0);
+
+        // Add first icon
+        ImageView mImageView1 = new ImageView(this);
+        mImageView1.setLayoutParams(new FrameLayout.LayoutParams(dp2px(80, this), dp2px(80, this)));
+        mImageView1.setImageResource(R.drawable.donut_circle);
+        mFrameLayout.addView(mImageView1);
+
+        // Add second icon
+        ImageView mImageView2 = new ImageView(this);
+        mImageView2.setLayoutParams(new FrameLayout.LayoutParams(dp2px(80, this), dp2px(80, this)));
+        mImageView2.setX(dp2px(80, this));
+        mImageView2.setImageResource(R.drawable.icecream_circle);
+        mFrameLayout.addView(mImageView2);
+
+        // Add third icon above the previous two
+        ImageView mImageView3 = new ImageView(this);
+        mImageView3.setLayoutParams(new FrameLayout.LayoutParams(dp2px(80, this), dp2px(80, this)));
+        mImageView3.setX(dp2px(40, this));
+        mImageView3.setY(dp2px(40, this));
+        mImageView3.setImageResource(R.drawable.froyo_circle);
+        mFrameLayout.addView(mImageView3);
     }
 
     static class Card extends AppCompatActivity {
@@ -50,5 +68,9 @@ public class GameActivity extends AppCompatActivity {
             this.position = position;
             this.layer = layer;
         }
+    }
+
+    public static int dp2px(int dp, Context context) {
+        return Math.round(dp * context.getResources().getDisplayMetrics().density);
     }
 }
