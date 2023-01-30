@@ -28,7 +28,7 @@ public class GameActivity extends AppCompatActivity {
         id2img.put(0, R.drawable.orange);
         id2img.put(1, R.drawable.donut_circle);
         id2img.put(2, R.drawable.froyo_circle);
-        id2img.put(3, R.drawable.ic_launcher_background);
+        id2img.put(3, R.drawable.ic_launcher_foreground);
         id2img.put(4, R.drawable.icecream_circle);
 
         Card card1 = new Card(0, new Pair<Integer, Integer>(0, 0), 0);
@@ -62,7 +62,8 @@ public class GameActivity extends AppCompatActivity {
         mImageView.setX(dp2px(layer * 40 + card.position.first * 80, this));
         mImageView.setY(dp2px(layer * 40 + card.position.second * 80, this));
         mImageView.setZ(card.layer);
-        mImageView.setImageResource(id2img.get(card.type));
+        Integer img = id2img.get(card.type);
+        mImageView.setImageResource(img == null ? R.drawable.ic_launcher_background : img);
         mFrameLayout.addView(mImageView);
     }
 
