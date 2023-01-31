@@ -9,13 +9,90 @@ import android.util.Pair;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
     private FrameLayout mFrameLayout;
     private FrameLayout.LayoutParams mLayoutParams;
     private HashMap<Integer, Integer> id2img;
+
+    private ArrayList<Integer[][]> generatePhase(Integer n_cardTypes, Integer n_triples, Context context) {
+        Integer type = 0;
+        ArrayList<Integer> cards = new ArrayList<Integer>();
+        for (int i = 0 ;i < n_triples; ++i) {
+            cards.add(type);
+            cards.add(type);
+            cards.add(type++);
+            type %= n_cardTypes;
+        }
+        Collections.shuffle(cards);
+        ArrayList<Integer[][]> phase = new ArrayList<Integer[][]>();
+        HashSet<ArrayList<Integer>> set = new HashSet<ArrayList<Integer>>();
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                ArrayList<Integer> triple = new ArrayList<Integer>();
+                triple.add(0);
+                triple.add(i);
+                triple.add(j);
+                set.add(triple);
+            }
+        Random random = new Random();
+        int n = n_triples * 3;
+        for (int i = 0; i < n; ++i) {
+            int nextInt = random.nextInt(set.size()), currentIndex = 0;
+            for (ArrayList<Integer> triple : set) {
+                if (currentIndex == nextInt) {
+                    Integer n_layer = triple.get(0), row = triple.get(1), col = triple.get(2);
+                    if (n_layer >= phase.size())
+                        phase.add(new Integer[5 - n_layer][5 - n_layer]);
+                    Integer[][] layer = phase.get(n_layer);
+                    type = cards.get(0);
+                    cards.remove(0);
+                    layer[row][col] = type;
+                    set.remove(triple);
+                    put(new Card(type, new Pair<Integer, Integer>(row, col), n_layer), context);
+                    if (n_layer > 2)
+                        break;
+                    if (row > 0 && col > 0 && layer[row - 1][col - 1] != null && layer[row - 1][col] != null && layer[row][col - 1] != null) {
+                        ArrayList<Integer> newTriple = new ArrayList<Integer>();
+                        newTriple.add(n_layer + 1);
+                        newTriple.add(row - 1);
+                        newTriple.add(col - 1);
+                        set.add(newTriple);
+                    }
+                    if (row > 0 && col < 4 - n_layer && layer[row - 1][col] != null && layer[row - 1][col + 1] != null && layer[row][col + 1] != null) {
+                        ArrayList<Integer> newTriple = new ArrayList<Integer>();
+                        newTriple.add(n_layer + 1);
+                        newTriple.add(row - 1);
+                        newTriple.add(col);
+                        set.add(newTriple);
+                    }
+                    if (row < 4 - n_layer && col > 0 && layer[row][col - 1] != null && layer[row + 1][col - 1] != null && layer[row + 1][col] != null) {
+                        ArrayList<Integer> newTriple = new ArrayList<Integer>();
+                        newTriple.add(n_layer + 1);
+                        newTriple.add(row);
+                        newTriple.add(col - 1);
+                        set.add(newTriple);
+                    }
+                    if (row < 4 - n_layer && col < 4 - n_layer && layer[row][col + 1] != null && layer[row + 1][col] != null && layer[row + 1][col + 1] != null) {
+                        ArrayList<Integer> newTriple = new ArrayList<Integer>();
+                        newTriple.add(n_layer + 1);
+                        newTriple.add(row);
+                        newTriple.add(col);
+                        set.add(newTriple);
+                    }
+                    break;
+                }
+                ++currentIndex;
+            }
+        }
+        return phase;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +108,7 @@ public class GameActivity extends AppCompatActivity {
         id2img.put(3, R.drawable.ic_launcher_foreground);
         id2img.put(4, R.drawable.icecream_circle);
 
-        Card card1 = new Card(0, new Pair<Integer, Integer>(0, 0), 0);
-        put(card1, this);
-        Card card2 = new Card(1, new Pair<Integer, Integer>(0, 1), 0);
-        put(card2, this);
-        Card card3 = new Card(2, new Pair<Integer, Integer>(1, 0), 0);
-        put(card3, this);
-        Card card4 = new Card(3, new Pair<Integer, Integer>(1, 1), 0);
-        put(card4, this);
-        Card card5 = new Card(4, new Pair<Integer, Integer>(0, 0), 1);
-        put(card5, this);
+        generatePhase(5, 13, this);
     }
 
     private static class Card extends AppCompatActivity {
