@@ -6,6 +6,8 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.telephony.TelephonyCallback;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -17,15 +19,18 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
+    private ArrayList<Pair<Integer, ImageView>> selections;
     private LinearLayout queue;
     private LinearLayout.LayoutParams queueParams;
     private FrameLayout mFrameLayout;
@@ -110,8 +115,8 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        selections = new ArrayList<Pair<Integer, ImageView>>();
         queue = findViewById(R.id.queue);
-        // queueParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         queueParams = new LinearLayout.LayoutParams(dp2px(400 / 7, this), LinearLayout.LayoutParams.MATCH_PARENT);
         mFrameLayout = findViewById(R.id.board);
         mFrameLayoutParams = new FrameLayout.LayoutParams(dp2px(80, this), dp2px(80, this));
@@ -119,7 +124,7 @@ public class GameActivity extends AppCompatActivity {
         id2img.put(0, R.drawable.orange);
         id2img.put(1, R.drawable.donut_circle);
         id2img.put(2, R.drawable.froyo_circle);
-        id2img.put(3, R.drawable.ic_launcher_foreground);
+        id2img.put(3, R.drawable.ic_launcher_background);
         id2img.put(4, R.drawable.icecream_circle);
 
         generatePhase(5, 13, this);
@@ -144,14 +149,31 @@ public class GameActivity extends AppCompatActivity {
         mImageView.setX(dp2px(layer * 40 + card.position.first * 80, this));
         mImageView.setY(dp2px(layer * 40 + card.position.second * 80, this));
         mImageView.setZ(card.layer);
-        Integer img = id2img.get(card.type);
+        Integer type = card.type, img = id2img.get(type);
         mImageView.setImageResource(img == null ? R.drawable.ic_launcher_background : img);
         mImageView.setOnClickListener(v -> {
-            mImageView.setVisibility(View.GONE);
+            // mImageView.setVisibility(View.GONE);
+            mFrameLayout.removeView(mImageView);
             ImageView clicked = new ImageView(context);
             clicked.setLayoutParams(queueParams);
             clicked.setImageResource(img == null ? R.drawable.ic_launcher_background : img);
             queue.addView(clicked);
+            ArrayList<Pair<Integer, ImageView>> arrayList = new ArrayList<Pair<Integer, ImageView>>();
+            for (Pair<Integer, ImageView> selection : selections) {
+                if (selection.first.equals(type))
+                    arrayList.add(selection);
+                if (arrayList.size() > 1) {
+                    for (Pair<Integer, ImageView> element : arrayList) {
+                        selections.remove(element);
+                        queue.removeView(element.second);
+                    }
+                    queue.removeView(clicked);
+                    return;
+                }
+            }
+            if (selections.size() > 5)
+                finish();
+            selections.add(new Pair<Integer, ImageView>(type, clicked));
         });
         mFrameLayout.addView(mImageView);
     }
