@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Oarrange</string>
     <string name="button_start">Start</string>
+    <string name="game_over">Game Over</string>
+    <string name="back">Back</string>
+    <string name="welcome">Welcome\nto\nOarrange!</string>
 </resources>

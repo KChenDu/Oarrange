@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -127,7 +128,7 @@ public class GameActivity extends AppCompatActivity {
         id2img.put(3, R.drawable.ic_launcher_background);
         id2img.put(4, R.drawable.icecream_circle);
 
-        generatePhase(5, 13, this);
+        generatePhase(5, 3, this);
     }
 
     private static class Card extends AppCompatActivity {
@@ -171,8 +172,10 @@ public class GameActivity extends AppCompatActivity {
                     return;
                 }
             }
-            if (selections.size() > 5)
+            if (selections.size() > 5) {
                 finish();
+                startActivity(new Intent(context, GameOverActivity.class));
+            }
             selections.add(new Pair<Integer, ImageView>(type, clicked));
         });
         mFrameLayout.addView(mImageView);

@@ -17,7 +17,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchGame(View view) {
-        Log.d(LOG_TAG, "Start Button clicked!");
         startActivity(new Intent(this, GameActivity.class));
     }
 }
