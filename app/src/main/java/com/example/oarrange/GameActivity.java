@@ -130,14 +130,15 @@ public class GameActivity extends AppCompatActivity {
         id2img.put(3, R.drawable.ic_launcher_background);
         id2img.put(4, R.drawable.icecream_circle);
 
-        level = 3;
+        level = 18;
         generatePhase(5, level, this);
     }
 
-    private static class Card extends AppCompatActivity {
+    private static class Card {
         public Integer type;
         public Pair<Integer, Integer> position;
         public Integer layer;
+        // State bool clickable
 
         public Card(Integer type, Pair<Integer, Integer> position, Integer layer) {
             this.type = type;
