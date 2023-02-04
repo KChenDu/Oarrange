@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
+    Integer level, activeViews;
     private ArrayList<Pair<Integer, ImageView>> selections;
     private LinearLayout queue;
     private LinearLayout.LayoutParams queueParams;
@@ -39,6 +40,7 @@ public class GameActivity extends AppCompatActivity {
     private HashMap<Integer, Integer> id2img;
 
     private ArrayList<Integer[][]> generatePhase(Integer n_cardTypes, Integer n_triples, Context context) {
+        activeViews = n_triples * 3;
         Integer type = 0;
         ArrayList<Integer> cards = new ArrayList<Integer>();
         for (int i = 0 ;i < n_triples; ++i) {
@@ -128,7 +130,8 @@ public class GameActivity extends AppCompatActivity {
         id2img.put(3, R.drawable.ic_launcher_background);
         id2img.put(4, R.drawable.icecream_circle);
 
-        generatePhase(5, 3, this);
+        level = 3;
+        generatePhase(5, level, this);
     }
 
     private static class Card extends AppCompatActivity {
@@ -153,6 +156,7 @@ public class GameActivity extends AppCompatActivity {
         Integer type = card.type, img = id2img.get(type);
         mImageView.setImageResource(img == null ? R.drawable.ic_launcher_background : img);
         mImageView.setOnClickListener(v -> {
+            --activeViews;
             // mImageView.setVisibility(View.GONE);
             mFrameLayout.removeView(mImageView);
             ImageView clicked = new ImageView(context);
@@ -169,6 +173,16 @@ public class GameActivity extends AppCompatActivity {
                         queue.removeView(element.second);
                     }
                     queue.removeView(clicked);
+                    if (activeViews < 1) {
+                        mFrameLayout.removeAllViews();
+                        queue.removeAllViews();
+                        selections.clear();
+                        if (++level > 18) {
+                            finish();
+                            startActivity(new Intent(context, CongratulationsActivity.class));
+                        }
+                        generatePhase(5, level, context);
+                    }
                     return;
                 }
             }
