@@ -32,18 +32,20 @@ import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
     Integer level, activeViews;
-    private ArrayList<Pair<Integer, ImageView>> selections;
+    private List<Pair<Integer, ImageView>> selections;
     private LinearLayout queue;
     private LinearLayout.LayoutParams queueParams;
     private FrameLayout mFrameLayout;
     private FrameLayout.LayoutParams mFrameLayoutParams;
-    private HashMap<Integer, Integer> id2img;
+    private Map<Integer, Integer> id2img;
 
-    private ArrayList<Integer[][]> generatePhase(Integer nCardTypes, Integer n_triples, Context context) {
-        activeViews = n_triples * 3;
+    private List<Integer[][]> board;
+
+    private List<Integer[][]> generatePhase(Integer nCardTypes, Integer nTriples, Context context) {
+        activeViews = nTriples * 3;
         Integer type = 0;
-        ArrayList<Integer> cards = new ArrayList<Integer>();
-        for (int i = 0 ;i < n_triples; ++i) {
+        List<Integer> cards = new ArrayList<Integer>();
+        for (int i = 0 ;i < nTriples; ++i) {
             cards.add(type);
             cards.add(type);
             cards.add(type++);
@@ -61,7 +63,7 @@ public class GameActivity extends AppCompatActivity {
                 set.add(triple);
             }
         Random random = new Random();
-        int n = n_triples * 3;
+        int n = nTriples * 3;
         for (int i = 0; i < n; ++i) {
             int nextInt = random.nextInt(set.size()), currentIndex = 0;
             for (ArrayList<Integer> triple : set) {
@@ -135,7 +137,7 @@ public class GameActivity extends AppCompatActivity {
         init();
 
         level = 18;
-        generatePhase(5, level, this);
+        board = generatePhase(5, level, this);
     }
 
     private void put(Card card, Context context) {
