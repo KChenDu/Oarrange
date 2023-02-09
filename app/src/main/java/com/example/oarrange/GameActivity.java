@@ -87,6 +87,15 @@ public class GameActivity extends AppCompatActivity {
         draw();
     }
 
+    void enable(Integer nLayer, Pair<Integer, Integer> position) {
+        int size = 4 - nLayer, row = position.first, col = position.second;
+        if (!(row > 0 && col > 0 && !board.get(nLayer + 1)[row - 1][col - 1].selected
+         || row > 0 && col < size && !board.get(nLayer + 1)[row - 1][col].selected
+         || row < size && col > 0 && !board.get(nLayer + 1)[row][col - 1].selected
+         || row < size && col < size && !board.get(nLayer + 1)[row][col].selected))
+            board.get(nLayer)[row][col].mImageView.setClickable(true);
+    }
+
     private void put(Card card, Integer nLayer, Pair<Integer, Integer> position, Context context) {
         Integer row = position.first, col = position.second;
         if (nLayer > 0) {
@@ -102,6 +111,13 @@ public class GameActivity extends AppCompatActivity {
         mImageView.setZ(nLayer);
         mImageView.setOnClickListener(v -> {
             --activeViews;
+            card.selected = true;
+            if (nLayer > 0) {
+                enable(nLayer - 1, new Pair<Integer, Integer>(row, col));
+                enable(nLayer - 1, new Pair<Integer, Integer>(row, col + 1));
+                enable(nLayer - 1, new Pair<Integer, Integer>(row + 1, col));
+                enable(nLayer - 1, new Pair<Integer, Integer>(row + 1, col + 1));
+            }
             mFrameLayout.removeView(mImageView);
             ImageView clicked = new ImageView(context);
             clicked.setLayoutParams(queueParams);

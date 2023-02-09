@@ -11,8 +11,7 @@ import android.widget.ImageView;
 public class Card {
     public Integer type;
     public ImageView mImageView;
-    //Boolean clickable;
-    // State bool clickable
+    Boolean selected;
 
     public Card(Integer type, Context context) {
         this.type = type;
@@ -20,6 +19,6 @@ public class Card {
         Integer img = id2img.get(type);
         mImageView.setImageResource(img == null ? R.drawable.ic_launcher_foreground : img);
         mImageView.setLayoutParams(new FrameLayout.LayoutParams(dp2px(80, context), dp2px(80, context)));
-        //clickable = true;
+        selected = false;
     }
 }
