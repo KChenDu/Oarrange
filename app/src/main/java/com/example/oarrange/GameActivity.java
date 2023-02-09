@@ -138,19 +138,6 @@ public class GameActivity extends AppCompatActivity {
         generatePhase(5, level, this);
     }
 
-    private static class Card {
-        public Integer type;
-        public Pair<Integer, Integer> position;
-        public Integer layer;
-        // State bool clickable
-
-        public Card(Integer type, Pair<Integer, Integer> position, Integer layer) {
-            this.type = type;
-            this.position = position;
-            this.layer = layer;
-        }
-    }
-
     private void put(Card card, Context context) {
         ImageView mImageView = new ImageView(context);
         mImageView.setLayoutParams(mFrameLayoutParams);
