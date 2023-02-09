@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.util.Pair;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;

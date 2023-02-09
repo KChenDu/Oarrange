@@ -41,8 +41,7 @@ public class GameActivity extends AppCompatActivity {
     private LinearLayout queue;
     private LinearLayout.LayoutParams queueParams;
     private FrameLayout mFrameLayout;
-
-    private List<Card[][]> phase;
+    private List<Card[][]> board;
 
     public static Map<Integer, Integer> id2img = new HashMap<Integer, Integer>();
 
@@ -58,25 +57,20 @@ public class GameActivity extends AppCompatActivity {
         selections = new ArrayList<Pair<Integer, ImageView>>();
         queue = findViewById(R.id.queue);
         queueParams = new LinearLayout.LayoutParams(dp2px(400 / 7, this), LinearLayout.LayoutParams.MATCH_PARENT);
-
-
         mFrameLayout = findViewById(R.id.board);
     }
 
     private void draw() {
-        int layers = phase.size();
+        int layers = board.size();
         for (int nLayer = 0; nLayer < layers; ++nLayer) {
-            Card[][] layer = phase.get(nLayer);
+            Card[][] layer = board.get(nLayer);
             int rows = layer.length;
             for (int nRow = 0; nRow < rows; ++nRow) {
                 Card[] row = layer[nRow];
                 int cols = row.length;
                 for (int nCol = 0; nCol < cols; ++nCol)
-                    if (row[nCol] != null) {
-                        Log.e("myLog", "put start");
+                    if (row[nCol] != null)
                         put(row[nCol], nLayer, new Pair<Integer, Integer>(nRow, nCol), this);
-                        Log.e("myLog", "put finished");
-                    }
             }
         }
     }
@@ -88,17 +82,24 @@ public class GameActivity extends AppCompatActivity {
 
         init();
 
-        level = 3;
-        phase = generatePhase(5, level, this);
+        level = 18;
+        board= generatePhase(5, level, this);
         draw();
     }
 
-    private void put(Card card, Integer layer, Pair<Integer, Integer> position, Context context) {
+    private void put(Card card, Integer nLayer, Pair<Integer, Integer> position, Context context) {
+        Integer row = position.first, col = position.second;
+        if (nLayer > 0) {
+            Card[][] layer = board.get(nLayer - 1);
+            layer[row][col].mImageView.setClickable(false);
+            layer[row][col + 1].mImageView.setClickable(false);
+            layer[row + 1][col].mImageView.setClickable(false);
+            layer[row + 1][col + 1].mImageView.setClickable(false);
+        }
         ImageView mImageView = card.mImageView;
-        mImageView.setX(dp2px(layer * 40 + position.first * 80, context));
-        mImageView.setY(dp2px(layer * 40 + position.second * 80, context));
-        mImageView.setZ(layer);
-        Log.e("myLog", "position set");
+        mImageView.setX(dp2px(nLayer * 40 + position.first * 80, context));
+        mImageView.setY(dp2px(nLayer * 40 + position.second * 80, context));
+        mImageView.setZ(nLayer);
         mImageView.setOnClickListener(v -> {
             --activeViews;
             mFrameLayout.removeView(mImageView);
@@ -107,7 +108,7 @@ public class GameActivity extends AppCompatActivity {
             Integer img = id2img.get(card.type);
             clicked.setImageResource(img == null ? R.drawable.ic_launcher_foreground : img);
             queue.addView(clicked);
-            List<Pair<Integer, ImageView>> arrayList = new ArrayList<Pair<Integer, ImageView>>();
+            List<Pair<Integer, ImageView>> arrayList = new LinkedList<Pair<Integer, ImageView>>();
             Integer type = card.type;
             for (Pair<Integer, ImageView> selection : selections) {
                 if (selection.first.equals(type))
@@ -126,7 +127,7 @@ public class GameActivity extends AppCompatActivity {
                             finish();
                             startActivity(new Intent(context, CongratulationsActivity.class));
                         }
-                        phase = generatePhase(5, level, context);
+                        board = generatePhase(5, level, context);
                         draw();
                     }
                     return;
