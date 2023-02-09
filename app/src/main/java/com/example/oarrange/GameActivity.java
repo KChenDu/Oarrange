@@ -39,7 +39,7 @@ public class GameActivity extends AppCompatActivity {
     private FrameLayout.LayoutParams mFrameLayoutParams;
     private HashMap<Integer, Integer> id2img;
 
-    private ArrayList<Integer[][]> generatePhase(Integer n_cardTypes, Integer n_triples, Context context) {
+    private ArrayList<Integer[][]> generatePhase(Integer nCardTypes, Integer n_triples, Context context) {
         activeViews = n_triples * 3;
         Integer type = 0;
         ArrayList<Integer> cards = new ArrayList<Integer>();
@@ -47,7 +47,7 @@ public class GameActivity extends AppCompatActivity {
             cards.add(type);
             cards.add(type);
             cards.add(type++);
-            type %= n_cardTypes;
+            type %= nCardTypes;
         }
         Collections.shuffle(cards);
         ArrayList<Integer[][]> phase = new ArrayList<Integer[][]>();
@@ -113,11 +113,7 @@ public class GameActivity extends AppCompatActivity {
         return phase;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
-
+    private void init() {
         selections = new ArrayList<Pair<Integer, ImageView>>();
         queue = findViewById(R.id.queue);
         queueParams = new LinearLayout.LayoutParams(dp2px(400 / 7, this), LinearLayout.LayoutParams.MATCH_PARENT);
@@ -129,6 +125,14 @@ public class GameActivity extends AppCompatActivity {
         id2img.put(2, R.drawable.froyo_circle);
         id2img.put(3, R.drawable.ic_launcher_background);
         id2img.put(4, R.drawable.icecream_circle);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_game);
+
+        init();
 
         level = 18;
         generatePhase(5, level, this);
