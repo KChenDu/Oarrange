@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -42,6 +45,7 @@ public class GameActivity extends AppCompatActivity {
     private LinearLayout.LayoutParams queueParams;
     private FrameLayout mFrameLayout;
     private List<Card[][]> board;
+    private ColorMatrixColorFilter mColorMatrixFilter;
 
     public static Map<Integer, Integer> id2img = new HashMap<Integer, Integer>();
 
@@ -58,6 +62,9 @@ public class GameActivity extends AppCompatActivity {
         queue = findViewById(R.id.queue);
         queueParams = new LinearLayout.LayoutParams(dp2px(400 / 7, this), LinearLayout.LayoutParams.MATCH_PARENT);
         mFrameLayout = findViewById(R.id.board);
+        ColorMatrix mColorMatrix = new ColorMatrix();
+        mColorMatrix.setSaturation(0);
+        mColorMatrixFilter = new ColorMatrixColorFilter(mColorMatrix);
     }
 
     private void draw() {
@@ -92,18 +99,26 @@ public class GameActivity extends AppCompatActivity {
         if (!(row > 0 && col > 0 && !board.get(nLayer + 1)[row - 1][col - 1].selected
          || row > 0 && col < size && !board.get(nLayer + 1)[row - 1][col].selected
          || row < size && col > 0 && !board.get(nLayer + 1)[row][col - 1].selected
-         || row < size && col < size && !board.get(nLayer + 1)[row][col].selected))
-            board.get(nLayer)[row][col].mImageView.setClickable(true);
+         || row < size && col < size && !board.get(nLayer + 1)[row][col].selected)) {
+            ImageView mImageView = board.get(nLayer)[row][col].mImageView;
+            mImageView.setClickable(true);
+            mImageView.setColorFilter(null);
+        }
+    }
+
+    void disable(Integer nLayer, Pair<Integer, Integer> position) {
+        ImageView mImageView = board.get(nLayer)[position.first][position.second].mImageView;
+        mImageView.setClickable(false);
+        mImageView.setColorFilter(mColorMatrixFilter);
     }
 
     private void put(Card card, Integer nLayer, Pair<Integer, Integer> position, Context context) {
         Integer row = position.first, col = position.second;
         if (nLayer > 0) {
-            Card[][] layer = board.get(nLayer - 1);
-            layer[row][col].mImageView.setClickable(false);
-            layer[row][col + 1].mImageView.setClickable(false);
-            layer[row + 1][col].mImageView.setClickable(false);
-            layer[row + 1][col + 1].mImageView.setClickable(false);
+            disable(nLayer - 1, new Pair<Integer, Integer>(row, col));
+            disable(nLayer - 1, new Pair<Integer, Integer>(row, col + 1));
+            disable(nLayer - 1, new Pair<Integer, Integer>(row + 1, col));
+            disable(nLayer - 1, new Pair<Integer, Integer>(row + 1, col + 1));
         }
         ImageView mImageView = card.mImageView;
         mImageView.setX(dp2px(nLayer * 40 + position.first * 80, context));
