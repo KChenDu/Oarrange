@@ -51,8 +51,7 @@ public class GameActivity extends AppCompatActivity {
     private FrameLayout mFrameLayout;
     private List<Card[][]> board;
     private ColorMatrixColorFilter mColorMatrixFilter;
-    private Timer timer;
-    private TimerTask timerTask;
+    private GameTimer gameTimer;
 
     private void init() {
         selections = new ArrayList<Pair<Integer, ImageView>>();
@@ -62,14 +61,7 @@ public class GameActivity extends AppCompatActivity {
         ColorMatrix mColorMatrix = new ColorMatrix();
         mColorMatrix.setSaturation(0);
         mColorMatrixFilter = new ColorMatrixColorFilter(mColorMatrix);
-        timer = new Timer();
-        timerTask = new GameTimerTask(this) {
-            @Override
-            public void run() {
-                finish();
-                startActivity(new Intent(context, GameOverActivity.class));
-            }
-        };
+        gameTimer = new GameTimer(this);
     }
 
     private void draw() {
@@ -94,10 +86,10 @@ public class GameActivity extends AppCompatActivity {
 
         init();
 
-        level = 18;
+        level = 3;
         board = generatePhase(5, level, this);
         draw();
-        timer.schedule(timerTask, 5000);
+        gameTimer.reset(level);
     }
 
     void enable(Integer nLayer, Pair<Integer, Integer> position) {
@@ -112,7 +104,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    void disable(Integer nLayer, Pair<Integer, Integer> position) {
+    private void disable(Integer nLayer, Pair<Integer, Integer> position) {
         ImageView mImageView = board.get(nLayer)[position.first][position.second].mImageView;
         mImageView.setClickable(false);
         mImageView.setColorFilter(mColorMatrixFilter);
@@ -166,6 +158,7 @@ public class GameActivity extends AppCompatActivity {
                         }
                         board = generatePhase(5, level, context);
                         draw();
+                        gameTimer.reset(level);
                     }
                     return;
                 }
