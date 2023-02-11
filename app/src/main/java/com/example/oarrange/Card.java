@@ -1,6 +1,6 @@
 package com.example.oarrange;
 
-import static com.example.oarrange.GameActivity.id2img;
+import static com.example.oarrange.Constants.id2img;
 import static com.example.oarrange.Utils.dp2px;
 
 import android.content.Context;

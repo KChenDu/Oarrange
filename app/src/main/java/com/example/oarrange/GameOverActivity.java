@@ -13,7 +13,6 @@ public class GameOverActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_over);
     }
 
-
     public void exit(View view) {
         finish();
     }

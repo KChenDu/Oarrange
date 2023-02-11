@@ -1,7 +1,5 @@
 package com.example.oarrange;
 
-import static com.example.oarrange.GameActivity.id2img;
-
 import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
@@ -95,5 +93,4 @@ public class Utils {
         }
         return phase;
     }
-
 }

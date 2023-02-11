@@ -1,5 +1,6 @@
 package com.example.oarrange;
 
+import static com.example.oarrange.Constants.id2img;
 import static com.example.oarrange.Utils.dp2px;
 import static com.example.oarrange.Utils.generatePhase;
 
@@ -27,8 +28,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.lang.reflect.Array;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -36,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameActivity extends AppCompatActivity {
     public static Integer activeViews;
@@ -46,16 +51,8 @@ public class GameActivity extends AppCompatActivity {
     private FrameLayout mFrameLayout;
     private List<Card[][]> board;
     private ColorMatrixColorFilter mColorMatrixFilter;
-
-    public static Map<Integer, Integer> id2img = new HashMap<Integer, Integer>();
-
-    static {
-        id2img.put(0, R.drawable.orange);
-        id2img.put(1, R.drawable.donut_circle);
-        id2img.put(2, R.drawable.froyo_circle);
-        id2img.put(3, R.drawable.ic_launcher_background);
-        id2img.put(4, R.drawable.icecream_circle);
-    }
+    private Timer timer;
+    private TimerTask timerTask;
 
     private void init() {
         selections = new ArrayList<Pair<Integer, ImageView>>();
@@ -65,6 +62,14 @@ public class GameActivity extends AppCompatActivity {
         ColorMatrix mColorMatrix = new ColorMatrix();
         mColorMatrix.setSaturation(0);
         mColorMatrixFilter = new ColorMatrixColorFilter(mColorMatrix);
+        timer = new Timer();
+        timerTask = new GameTimerTask(this) {
+            @Override
+            public void run() {
+                finish();
+                startActivity(new Intent(context, GameOverActivity.class));
+            }
+        };
     }
 
     private void draw() {
@@ -90,8 +95,9 @@ public class GameActivity extends AppCompatActivity {
         init();
 
         level = 18;
-        board= generatePhase(5, level, this);
+        board = generatePhase(5, level, this);
         draw();
+        timer.schedule(timerTask, 5000);
     }
 
     void enable(Integer nLayer, Pair<Integer, Integer> position) {
