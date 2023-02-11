@@ -14,6 +14,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.ContactsContract;
 import android.telephony.TelephonyCallback;
 import android.util.Log;
@@ -51,7 +52,9 @@ public class GameActivity extends AppCompatActivity {
     private FrameLayout mFrameLayout;
     private List<Card[][]> board;
     private ColorMatrixColorFilter mColorMatrixFilter;
-    private GameTimer gameTimer;
+    private GameCountDownTimer gameCountDownTimer;
+    private CountDownTimer countDownTimer;
+    private TextView textViewCountDown;
 
     private void init() {
         selections = new ArrayList<Pair<Integer, ImageView>>();
@@ -61,7 +64,7 @@ public class GameActivity extends AppCompatActivity {
         ColorMatrix mColorMatrix = new ColorMatrix();
         mColorMatrix.setSaturation(0);
         mColorMatrixFilter = new ColorMatrixColorFilter(mColorMatrix);
-        gameTimer = new GameTimer(this);
+        textViewCountDown = findViewById(R.id.textViewCountDown);
     }
 
     private void draw() {
@@ -89,7 +92,24 @@ public class GameActivity extends AppCompatActivity {
         level = 3;
         board = generatePhase(5, level, this);
         draw();
-        gameTimer.reset(level);
+
+        countDownTimer = new CountDownTimer((level - 2) * 5000L, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                textViewCountDown.setText(millisUntilFinished / 60000 + ":" + millisUntilFinished / 1000 % 60);
+            }
+
+            @Override
+            public void onFinish() {
+                finish();
+                Intent intent = new Intent();
+                intent.setClassName("com.example.oarrange", "com.example.oarrange.GameOverActivity");
+                startActivity(intent);
+            }
+        };
+        countDownTimer.start();
+
+        // gameCountDownTimer = new GameCountDownTimer((level - 2) * 5000);
     }
 
     void enable(Integer nLayer, Pair<Integer, Integer> position) {
@@ -158,7 +178,25 @@ public class GameActivity extends AppCompatActivity {
                         }
                         board = generatePhase(5, level, context);
                         draw();
-                        gameTimer.reset(level);
+                        // gameCountDownTimer.reset((level - 2) * 5000);
+
+                        countDownTimer.cancel();
+                        countDownTimer = new CountDownTimer((level - 2) * 5000L, 1000) {
+                            @Override
+                            public void onTick(long millisUntilFinished) {
+                                textViewCountDown.setText(millisUntilFinished / 60000 + ":" + millisUntilFinished / 1000 % 60);
+                            }
+
+                            @Override
+                            public void onFinish() {
+                                finish();
+                                Intent intent = new Intent();
+                                intent.setClassName("com.example.oarrange", "com.example.oarrange.GameOverActivity");
+                                startActivity(intent);
+                            }
+                        };
+                        countDownTimer.start();
+
                     }
                     return;
                 }
